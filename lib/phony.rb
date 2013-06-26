@@ -135,6 +135,10 @@ module Phony
       @codes.vanity_to_number vanity_number.dup
     end
 
+    def country cc
+      @codes.splitter_mapping[cc.size][cc]
+    end
+
   end
 
 end

@@ -4,7 +4,7 @@ module Phony
   #
   class Country
     
-    attr_accessor :codes
+    attr_accessor :codes, :cc
     
     # 
     #
@@ -23,7 +23,8 @@ module Phony
     #
     # TODO Rewrite.
     #
-    def with options = {}
+    def with cc, options = {}
+      @cc = cc
       @invalid_ndcs = options[:invalid_ndcs] || []
     end
     
@@ -43,7 +44,22 @@ module Phony
         return [code.local_splitter, zero, ndc, *rest] if rest && !rest.empty?
       end
     end
-    
+
+    def format number, options = {}
+      number = strip_cc(number)
+      CountryCodes.instance.format_cc_ndc_local options[:format], options[:spaces] || @default_space, @cc, *split(number)
+    end
+    alias formatted format
+
+    # Cleans and strips leading country code, if present
+    #
+    # Example:
+    #   410443643533 -> 0443643533
+    #
+    def strip_cc number
+      CountryCodes.instance.clean(number).gsub(/^#{@cc}/, '')
+    end
+
     # Removes 0s from partially normalized numbers
     # such as 410443643533.
     # 
